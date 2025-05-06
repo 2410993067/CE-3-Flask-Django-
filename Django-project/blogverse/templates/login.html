@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% block title_block %} Login Page {% endblock %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            background: #f4f7fa;
+        }
+
+        .login-container {
+            margin: 100px auto;
+            width: 100%;
+            max-width: 900px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            display: flex;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .left-panel, .right-panel {
+            flex: 1;
+            padding: 40px;
+            border-radius: 20px;
+        }
+
+        .left-panel {
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            background-image: url(https://img.freepik.com/free-photo/golden-frame-blue-background_53876-92990.jpg?uid=R195611394&ga=GA1.1.808562141.1730749088&semt=ais_hybrid&w=740);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .left-panel h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .left-panel p {
+            font-size: 1.1em;
+            color: #f0f0f0;
+            line-height: 1.6;
+        }
+
+        .right-panel {
+            background: #ffffff;
+        }
+
+        .right-panel h1 {
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #333;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="email"], input[type="password"], select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            transition: border 0.3s ease;
+            font-size: 1em;
+        }
+
+        input[type="email"]:focus, input[type="password"]:focus, select:focus {
+            outline: none;
+            border-color: #8ec5fc;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        input[type="submit"]:hover {
+            background: linear-gradient(to right, #2a5298, #1e3c72);
+            transform: scale(1.02);
+        }
+
+        a {
+            color: #6c63ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .messages {
+            margin-top: 15px;
+        }
+
+        .alert {
+            background-color: #fff5f5;
+            color: #d93025;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #e57373;
+            border-radius: 6px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-50%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                margin: 50px auto;
+                width: 90%;
+            }
+            .left-panel {
+                display: none;
+            }
+            .right-panel {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <!-- Left Side: Info -->
+    <div class="left-panel">
+        <h2>Hello Again!</h2>
+        <p>Welcome back to the site. Please login to access your profile, manage your content, and more!</p>
+    </div>
+
+    <!-- Right Side: Form -->
+    <div class="right-panel">
+        <h1>Login Page</h1>
+        <form method="POST" id="login-form">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="email" class="form-label">Enter Email:</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Enter Password:</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Choose Role:</label>
+                <select name="role" required>
+                    <option value="" disabled selected>Choose Role</option>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <input type="submit" value="Login">
+        </form>
+        <p style="text-align:center; margin-top:15px;">
+            <a href="#" onclick="delayedRedirect('{% url 'signup' %}')">New User? Register</a>
+        </p>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', function () {
+        document.querySelector('input[type="submit"]').value = 'Logging in...';
+    });
+
+    function delayedRedirect(url) {
+        const container = document.querySelector('.login-container');
+        container.style.transition = 'opacity 0.5s';
+        container.style.opacity = '0';
+        setTimeout(() => {
+            window.location.href = url;
+        }, 500);
+    }
+</script>
+</body>
+</html>
+{% endblock %}
